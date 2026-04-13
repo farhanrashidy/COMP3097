@@ -33,23 +33,30 @@ struct HomePage: View {
 
                 HStack {
 
+                    // Goes to Leaderboards Page
                     NavigationLink(destination: LeaderboardPage()) {
                         Text("Leaderboard")
                             .padding()
+                            .frame(height: 50)
+                            .background(Color.orange)
+                            .foregroundColor(.black)
+                            .cornerRadius(10)
                     }
 
                     Spacer()
-
+                    
+                    // Goes to Profile Page
                     NavigationLink(destination: ProfilePage()) {
                         Text("Profile")
                             .padding()
+                            .frame(height:50)
+                            .background(Color.blue)
+                            .foregroundColor(.black)
+                            .cornerRadius(10)
                     }
                 }
             }
             .padding()
         }
     }
-}
-#Preview {
-    HomePage()
 }

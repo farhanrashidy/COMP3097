@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+//User will select the difficult they want
 struct DifficultyPage: View {
 
     var body: some View {

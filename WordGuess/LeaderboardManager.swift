@@ -15,11 +15,11 @@ class LeaderboardManager: ObservableObject {
     let playerName = "You"
 
     init() {
-        // Always use the seeded leaderboard; ignore any previously saved data
+        // Always use the seeded leaderboard
         generateLeaderboard()
     }
 
-    // Generate players
+    // Seed data of players
     func generateLeaderboard() {
 
         scores = [
@@ -79,7 +79,7 @@ class LeaderboardManager: ObservableObject {
         save()
     }
 
-    // Add or update YOUR score
+    // Add or update user score
     func addScore(name: String, score: Int) {
 
         if let index = scores.firstIndex(where: { $0.name == playerName }) {

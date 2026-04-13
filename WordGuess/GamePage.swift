@@ -45,10 +45,6 @@ struct GamePage: View {
                 keyColors: keyColors
             )
 
-            Button("Submit") {
-                submitGuess()
-            }
-
             Text(message)
                 .font(.headline)
             
@@ -166,7 +162,7 @@ struct GamePage: View {
         let guessWord = guess.uppercased()
         let target = Array(targetWord)
 
-        // ✅ Store current row in a temp variable
+        // Store current row in a temp variable
         let row = currentRow
 
         for i in 0..<5 {

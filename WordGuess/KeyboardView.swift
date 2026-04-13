@@ -12,6 +12,7 @@ struct KeyboardView: View {
     let onKeyTap: (String) -> Void
     let keyColors: [String: TileColor]
 
+    // displaying the keyboard
     let rows = [
         ["Q","W","E","R","T","Y","U","I","O","P"],
         ["A","S","D","F","G","H","J","K","L"],
@@ -48,6 +49,7 @@ struct KeyboardView: View {
         return key == "ENTER" || key == "⌫" ? 60 : 32
     }
 
+    // keyboard color changes depending on the presence of the letter
     func backgroundColor(for key: String) -> Color {
 
         guard let color = keyColors[key] else {

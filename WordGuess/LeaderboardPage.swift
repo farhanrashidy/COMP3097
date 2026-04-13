@@ -14,6 +14,7 @@ struct LeaderboardPage: View {
             Text("Leaderboard")
                 .font(.largeTitle)
                 .padding()
+            
                 // Keep leaderboard in sync with profile score
                 .onAppear { syncUserScoreToProfile() }
                 .onChange(of: profile.totalScore) { _ in
@@ -40,7 +41,10 @@ struct LeaderboardPage: View {
                     showFull.toggle()
                 }
             }
-            .padding(.bottom)
+            .padding()
+            .background(Color.blue)
+            .foregroundColor(.black)
+            .cornerRadius(10)
 
             // Header
             HStack {
@@ -79,8 +83,7 @@ struct LeaderboardPage: View {
         }
     }
 
-    // MARK: - Core Logic
-
+    
     func displayedPlayers() -> [(offset: Int, element: PlayerScore)] {
 
         let all = Array(leaderboard.scores.enumerated())
@@ -113,10 +116,12 @@ struct LeaderboardPage: View {
     private func syncUserScoreToProfile() {
         let name = leaderboard.playerName
         let desired = profile.totalScore
+        
         // Find current leaderboard score for the user (0 if absent)
         let current = leaderboard.scores.first(where: { $0.name == name })?.score ?? 0
         let delta = desired - current
         if delta != 0 {
+            
             // Reuse addScore to adjust by the delta (positive or negative)
             leaderboard.addScore(name: name, score: delta)
         }

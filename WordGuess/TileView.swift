@@ -12,6 +12,7 @@ struct TileView: View {
     var letter: String
     var color: TileColor
 
+    // Game grid
     var body: some View {
 
         ZStack {
@@ -22,7 +23,7 @@ struct TileView: View {
             Text(letter)
                 .font(.title)
                 .bold()
-                .foregroundColor(.white)
+                .foregroundColor(.black)
         }
         .frame(width: 60, height: 60)
         .border(Color.gray)

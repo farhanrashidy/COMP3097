@@ -10,17 +10,18 @@ import Foundation
 struct WordDictionary {
 
     static let easy = [
-        "APPLE","GRAPE","BREAD","CHAIR","PLANT"
+        "APPLE","GRAPE","BREAD","CHAIR","PLANT","DRINK","EARTH","LIGHT","WATER","SMILE"
     ]
 
     static let medium = [
-        "BRICK","PLANE","SHEEP","SHARE","STONE"
+        "BRICK","PLANE","SHEEP","SHARE","STONE","CROWN","GLOVE","YIELD","PRIZE","WHISK"
     ]
 
     static let hard = [
-        "QUACK","ZEBRA","KNACK","FJORD","LYMPH"
+        "QUACK","ZEBRA","KNACK","FJORD","LYMPH","JAZZY","XYLEM","NYMPH","VEXED","QUIRK"
     ]
 
+    // word is randomized depending on the difficulty selected
     static func randomWord(difficulty: String) -> String {
         
         switch difficulty {
