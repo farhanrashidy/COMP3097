@@ -8,26 +8,33 @@ struct GamePage: View {
     
     @EnvironmentObject var profile: ProfileManager
     
+    // track if game ended
     @State private var isGameOver = false
     
+    //keyboard key colors
     @State private var keyColors: [String: TileColor] = [:]
     
     @State private var targetWord = ""
     
+    // all guesses
     @State private var guesses: [[String]] =
         Array(repeating: Array(repeating: "", count: 5), count: 6)
     
+    // tile color for each guessed letter
     @State private var colors: [[TileColor]] =
         Array(repeating: Array(repeating: .empty, count: 5), count: 6)
 
     @State private var currentRow = 0
+    
+    // current type word
     @State private var guess = ""
     
+    // timer tracking variables
     @State private var startTime = Date()
     @State private var timeElapsed = 0
-    
     @State private var timer: Timer?
     
+    // message to user
     @State private var message = ""
     
     var body: some View {
@@ -83,6 +90,7 @@ struct GamePage: View {
         .padding()
     }
 
+    //Game Grid UI
     var grid: some View {
 
         VStack(spacing: 5) {
@@ -103,6 +111,7 @@ struct GamePage: View {
         }
     }
 
+    
     func resetGame() {
 
         // Ensure any existing timer is stopped before starting a new one
@@ -127,6 +136,7 @@ struct GamePage: View {
         startTimer()
     }
     
+    // display letters on grid
     func displayLetter(row: Int, col: Int) -> String {
 
         // Show currently typed word in active row
@@ -139,6 +149,7 @@ struct GamePage: View {
         return guesses[row][col]
     }
     
+    //keyboard input handler
     func handleKeyPress(_ key:String){
         if key == "ENTER"{
             submitGuess()
@@ -154,6 +165,7 @@ struct GamePage: View {
             }
         }
     }
+    
     
     func submitGuess() {
 

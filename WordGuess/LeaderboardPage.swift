@@ -83,11 +83,12 @@ struct LeaderboardPage: View {
         }
     }
 
-    
+    // returns leaderboard entries to display
     func displayedPlayers() -> [(offset: Int, element: PlayerScore)] {
 
         let all = Array(leaderboard.scores.enumerated())
 
+        // find current position in leaderboard
         guard let userIndex = leaderboard.scores.firstIndex(where: { $0.name == leaderboard.playerName }) else {
             return Array(all.prefix(5))
         }
