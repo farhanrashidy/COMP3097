@@ -11,11 +11,13 @@ import SwiftUI
 struct WordGuessApp: App {
     
     @StateObject var leaderboard = LeaderboardManager()
+    @StateObject var profile = ProfileManager()
     
     var body: some Scene {
         WindowGroup {
             HomePage()
             .environmentObject(leaderboard)
+            .environmentObject(profile)
         }
     }
 }

@@ -1,10 +1,16 @@
 import SwiftUI
 
 struct GamePage: View {
-
+    
     let difficulty: String
     
     @EnvironmentObject var leaderboard: LeaderboardManager
+    
+    @EnvironmentObject var profile: ProfileManager
+    
+    @State private var isGameOver = false
+    
+    @State private var keyColors: [String: TileColor] = [:]
     
     @State private var targetWord = ""
     
@@ -34,12 +40,10 @@ struct GamePage: View {
 
             grid
 
-            TextField("Enter word", text: $guess)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .textInputAutocapitalization(.characters)
-                .onChange(of: guess) { _, newValue in
-                    guess = String(newValue.prefix(5))
-                }
+            KeyboardView(
+                onKeyTap: handleKeyPress,
+                keyColors: keyColors
+            )
 
             Button("Submit") {
                 submitGuess()
@@ -47,6 +51,31 @@ struct GamePage: View {
 
             Text(message)
                 .font(.headline)
+            
+            if isGameOver {
+
+                HStack(spacing: 20) {
+
+                    // Back to Home
+                    NavigationLink(destination: HomePage()) {
+                        Text("Back to Home")
+                            .frame(width: 140, height: 50)
+                            .background(Color.blue)
+                            .foregroundColor(.white)
+                            .cornerRadius(10)
+                    }
+
+                    // Next Level (restart game)
+                    Button("Next Level") {
+                        resetGame()
+                    }
+                    .frame(width: 140, height: 50)
+                    .background(Color.green)
+                    .foregroundColor(.white)
+                    .cornerRadius(10)
+                }
+                .padding(.top)
+            }
 
         }
         .onAppear {
@@ -69,8 +98,8 @@ struct GamePage: View {
                     ForEach(0..<5, id: \.self) { col in
 
                         TileView(
-                            letter: guesses[row][col],
-                            color: colors[row][col]
+                            letter: displayLetter(row: row, col: col),
+                            color: colors[row][col],
                         )
                     }
                 }
@@ -78,6 +107,58 @@ struct GamePage: View {
         }
     }
 
+    func resetGame() {
+
+        // Ensure any existing timer is stopped before starting a new one
+        stopTimer()
+
+        targetWord = WordDictionary.randomWord(difficulty: difficulty)
+
+        guesses = Array(repeating: Array(repeating: "", count: 5), count: 6)
+
+        colors = Array(repeating: Array(repeating: .empty, count: 5), count: 6)
+
+        // Clear keyboard coloring so keys return to default state
+        keyColors.removeAll()
+
+        currentRow = 0
+        guess = ""
+        message = ""
+        timeElapsed = 0
+        startTime = Date()
+        isGameOver = false
+
+        startTimer()
+    }
+    
+    func displayLetter(row: Int, col: Int) -> String {
+
+        // Show currently typed word in active row
+        if row == currentRow && col < guess.count {
+            let index = guess.index(guess.startIndex, offsetBy: col)
+            return String(guess[index])
+        }
+
+        // Show submitted guesses
+        return guesses[row][col]
+    }
+    
+    func handleKeyPress(_ key:String){
+        if key == "ENTER"{
+            submitGuess()
+        }
+        else if key == "⌫" {
+            if !guess.isEmpty {
+                guess.removeLast()
+            }
+        }
+        else{
+            if guess.count < 5 {
+                guess.append(key)
+            }
+        }
+    }
+    
     func submitGuess() {
 
         guard guess.count == 5 else { return }
@@ -85,28 +166,49 @@ struct GamePage: View {
         let guessWord = guess.uppercased()
         let target = Array(targetWord)
 
+        // ✅ Store current row in a temp variable
+        let row = currentRow
+
         for i in 0..<5 {
 
             let letter = String(guessWord[guessWord.index(guessWord.startIndex, offsetBy: i)])
 
-            guesses[currentRow][i] = letter
+            guesses[row][i] = letter
 
             if letter == String(target[i]) {
-                colors[currentRow][i] = .correct
+                colors[row][i] = .correct
             }
             else if targetWord.contains(letter) {
-                colors[currentRow][i] = .present
+                colors[row][i] = .present
             }
             else {
-                colors[currentRow][i] = .absent
+                colors[row][i] = .absent
             }
+            
+            let currentColor: TileColor
+
+            if letter == String(target[i]) {
+                currentColor = .correct
+            }
+            else if targetWord.contains(letter) {
+                currentColor = .present
+            }
+            else {
+                currentColor = .absent
+            }
+
+            colors[row][i] = currentColor
+
+            updateKeyColor(letter: letter, newColor: currentColor)
         }
 
+        // Check win BEFORE moving row
         if guessWord == targetWord {
             winGame()
             return
         }
 
+        // Move to next row AFTER everything is done
         currentRow += 1
         guess = ""
 
@@ -115,6 +217,22 @@ struct GamePage: View {
         }
     }
 
+    func updateKeyColor(letter: String, newColor: TileColor) {
+
+        let current = keyColors[letter]
+
+        // Priority: correct > present > absent
+        if current == .correct {
+            return
+        }
+
+        if current == .present && newColor == .absent {
+            return
+        }
+
+        keyColors[letter] = newColor
+    }
+    
     func startTimer() {
 
         timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
@@ -144,18 +262,30 @@ struct GamePage: View {
 
         let score = calculateScore()
 
-        leaderboard.addScore(name: "Player", score: score)
+        leaderboard.addScore(name: "You", score: score)
+
+        profile.updateAfterGame(
+            won: true,
+            score: score,
+            time: timeElapsed
+        )
 
         message = "You won! Score: \(score)"
+        isGameOver = true
     }
 
     func loseGame() {
 
         stopTimer()
 
+        profile.updateAfterGame(
+            won: false,
+            score: 0,
+            time: timeElapsed
+        )
+
         message = "The word was \(targetWord)"
+        isGameOver = true
     }
 }
-#Preview{
-    GamePage(difficulty: "Easy")
-}
+

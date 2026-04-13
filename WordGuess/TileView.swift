@@ -38,7 +38,7 @@ struct TileView: View {
         case .absent:
             return .gray
         case .empty:
-            return .black.opacity(0.2)
+            return Color.gray.opacity(0.2)
         }
     }
 }
